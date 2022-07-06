@@ -33,11 +33,11 @@ def main(a):
     commands = []
 
     if a == "size":
-        total_mem = 96
-        n_workers = 16
+        total_mem = 88
+        n_workers = 10
         partition_size = 200
 
-        for limit in [100, 1000, 10000, 100000, 1000000]:
+        for limit in [200000, 300000, 400000, 500000]:
             for _ in range(iterations):
                 ident = uuid.uuid4()
 
@@ -59,22 +59,16 @@ def main(a):
         limit = 100000
 
         for n_workers in [1, 2, 4, 8, 16, 32]:
-            for _ in range(iterations):
-                ident = uuid.uuid4()
-
-                o = str(output / "results" / str(ident))
-
+            for i in range(iterations):
                 commands.append(dict(
                     n_workers=n_workers,
                     memory=total_mem // n_workers,
                     partition_size=partition_size,
-                    output=o,
                     np=n_workers + 2,
-                    limit=limit,
-                    prefix=str(output)
+                    iteration=i
                 ))
 
-    pandas.DataFrame(commands).to_csv(str(output / "data.csv"), index=False)
+    pandas.DataFrame(commands).to_csv(str(output / "data_snake.csv"), index=False)
 
 
 if __name__ == "__main__":

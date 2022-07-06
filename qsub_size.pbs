@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#PBS -l walltime=12:00:00
+#PBS -l nodes=1:ppn=18
+#PBS -l mem=96gb
+
+module load SciPy-bundle/2021.10-foss-2021b
+module load vsc-mympirun
+module load atools
+
+export PYTHONPATH="${VSC_DATA}/python_lib_${VSC_INSTITUTE_CLUSTER}/lib/python3.9/site-packages/:${PYTHONPATH}"
+
+cd $PBS_O_WORKDIR
+
+source <(aenv --data data.csv --snif 4096)
+
+DATA_PATH=${VSC_DATA_VO_USER}/datasets/wbc/images/sample0/*.zarr
+CONFIG_PATH=${VSC_DATA_VO_USER}/datasets/wbc/scip_zarr_small.yml
+
+mympirun --hybrid $np $VSC_DATA/python_lib_${VSC_INSTITUTE_CLUSTER}/bin/scip --d9104 --limit $limit --timing "${prefix}/${PBS_ARRAYID}.json" -t1 --headless --mode mpi -l $VSC_SCRATCH_NODE -j $n_workers -m $memory -s $partition_size $output $CONFIG_PATH $DATA_PATH
+
