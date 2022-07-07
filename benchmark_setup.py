@@ -24,7 +24,8 @@ import os
 
 def main(a):
 
-    output = Path(os.environ["VSC_DATA_VO_USER"]) / "results/scip_benchmark"
+    vo = Path(os.environ["VSC_DATA_VO_USER"])
+    output = vo / "results/scip_benchmark"
     output = output / Path("benchmark_%s" % datetime.now().strftime("%Y%m%d%H%M%S"))
     output.mkdir(parents=True)
     (output / "results").mkdir()
@@ -37,7 +38,7 @@ def main(a):
         n_workers = 16
         partition_size = 200
 
-        for limit in [100, 1000, 10000, 100000, 1000000]:
+        for limit in [100, 1_000, 10_000, 100_000, 1_000_000]:
             for _ in range(iterations):
                 ident = uuid.uuid4()
 
@@ -49,30 +50,29 @@ def main(a):
                     partition_size=partition_size,
                     output=o,
                     np=n_workers + 2,
-                    limit=limit,
-                    prefix=str(output)
+                    prefix=str(output),
+                    data= (vo / "datasets/benchmark_datasets") / f"{str(limit)}.zarr"
                 ))
 
     if a == "n_workers":
         total_mem = 96
-        partition_size = 200
-        limit = 100000
+        # partition_size = 200
 
         for n_workers in [1, 2, 4, 8, 16, 32]:
-            for _ in range(iterations):
-                ident = uuid.uuid4()
+            for partition_size in [100, 400, 800, 1600]:
+                for _ in range(iterations):
+                    ident = uuid.uuid4()
 
-                o = str(output / "results" / str(ident))
+                    o = str(output / "results" / str(ident))
 
-                commands.append(dict(
-                    n_workers=n_workers,
-                    memory=total_mem // n_workers,
-                    partition_size=partition_size,
-                    output=o,
-                    np=n_workers + 2,
-                    limit=limit,
-                    prefix=str(output)
-                ))
+                    commands.append(dict(
+                        n_workers=n_workers,
+                        memory=total_mem // n_workers,
+                        partition_size=partition_size,
+                        output=o,
+                        np=n_workers + 2,
+                        prefix=str(output)
+                    ))
 
     pandas.DataFrame(commands).to_csv(str(output / "data.csv"), index=False)
 
