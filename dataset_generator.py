@@ -26,7 +26,7 @@ for size in sizes:
         object_codec=numcodecs.VLenArray('u2')
     )
     o.attrs["object_number"] = numpy.resize(z.attrs["object_number"], (size,)).tolist()
-    o.attrs["shape"] = numpy.resize(z.attrs["shape"], (size,)).tolist()
+    o.attrs["shape"] = numpy.resize(z.attrs["shape"], (size,3)).tolist()
 
     if len(z) > size:
         o[:] = z[:size]
