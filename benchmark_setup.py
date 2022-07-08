@@ -36,23 +36,24 @@ def main(a):
     if a == "size":
         total_mem = 96
         n_workers = 16
-        partition_size = 200
+        # partition_size = 200
 
         for limit in [100, 1_000, 10_000, 100_000, 1_000_000]:
-            for _ in range(iterations):
-                ident = uuid.uuid4()
+            for partition_size in [100, 400, 800, 1600]:
+                for _ in range(iterations):
+                    ident = uuid.uuid4()
 
-                o = str(output / "results" / str(ident))
+                    o = str(output / "results" / str(ident))
 
-                commands.append(dict(
-                    n_workers=n_workers,
-                    memory=total_mem // n_workers,
-                    partition_size=partition_size,
-                    output=o,
-                    np=n_workers + 2,
-                    prefix=str(output),
-                    data= (vo / "datasets/benchmark_datasets") / f"{str(limit)}.zarr"
-                ))
+                    commands.append(dict(
+                        n_workers=n_workers,
+                        memory=total_mem // n_workers,
+                        partition_size=partition_size,
+                        output=o,
+                        np=n_workers + 2,
+                        prefix=str(output),
+                        data= (vo / "datasets/benchmark_datasets") / f"{str(limit)}.zarr"
+                    ))
 
     if a == "n_workers":
         total_mem = 96
